@@ -1,3 +1,4 @@
+int kladka = 2;
 /*************************************************
 http://forum.arduino.cc/index.php?topic=229750.msg1658325#msg1658325
  * Public Constants
@@ -452,26 +453,35 @@ void hesAPirate()
 int stepCount = 0;         // number of steps the motor has taken
 
 void setup() {
-  // initialize the serial port:
+  digitalWrite(10, 1);
   Serial.begin(9600);
   for (int i = 4; i <= 7; i++)
     pinMode(i, 1);
+  //
+  wind();
+  unwind();
   hesAPirate();
 }
 
-int pin = 1;
-int dir = -1;
+int dir;
 byte holdtime;
-bool unwind = 1;
+bool is_unwind;
+
+int pin = 1;
 byte pins[6] = {7, 4,5,6,7, 4};
 
 void step() {
-  
   digitalWrite(pins[pin], 1);
+  
   delay(holdtime);
+  Serial.print("steps:");
+  Serial.println(stepCount);
+
   if (!unwind)
     digitalWrite(pins[pin+1], 1);
+    
   digitalWrite(pins[pin], 0);
+  
   if (!unwind)
   {
     delay(holdtime);
@@ -481,28 +491,78 @@ void step() {
   if (pin > 4) pin = 1;
   if (pin < 1) pin = 4;
   stepCount++;
-  Serial.print("steps:");
-  Serial.println(stepCount);
 }
 
 int pause;
 
 void loop() {
-  
-  if (unwind)
-  {
-    holdtime = 15;
-    pause = 5;
-    dir = -1;
-  }
-  else
-  {
-    holdtime = 30;
-    pause = 100;
-    dir = 1;
-  }
-  step();
-  delay(pause);
+
 }
 
+void manual_unwind()
+{
+  is_unwind  = 1;
+  holdtime = 15;
+  pause = 5;
+  dir = -1;
+  go();
+}
+
+void unwind()
+{
+  is_unwind  = 1;
+  holdtime = 15;
+  pause = 55;
+  dir = -1;
+  go();
+}
+
+void wind()
+{
+  is_unwind  = 0;
+  holdtime = 45;
+  pause = 300;
+  dir = 1;
+  go();
+}
+
+void go()
+{
+  for (int steps = 0; steps < 2450 * kladka; steps++)
+  {
+    step();
+    delay(pause);
+    if (digitalRead(10) == 0)
+      goto end;
+  }
+  end:
+    delay(2000);
+  clear();
+}
+
+void clear()
+{
+    for (int i = 0; i <= 5; i++)
+      digitalWrite(pins[i], 0);
+}
+
+void forceful()
+{ 
+while (true){
+  digitalWrite(pins[pin], 1);
+  
+  delay(holdtime);
+  Serial.print("steps:");
+  Serial.println(stepCount);
+
+  digitalWrite(pins[pin-1], 0);
+  delay(holdtime);
+  
+  pin += dir;
+  if (pin > 4) pin = 1;
+  if (pin < 1) pin = 4;
+  stepCount++;
+}
+clear();
+}
 
