@@ -1,4 +1,5 @@
-int kladka = 2;
+int kladka = 1;
+int kroky = 5000;
 /*************************************************
 http://forum.arduino.cc/index.php?topic=229750.msg1658325#msg1658325
  * Public Constants
@@ -111,9 +112,9 @@ void buzz(int targetPin, long frequency, long length, long tempo) {
   long numCycles = frequency * length/ (tempo/.3);
   for (long i=0; i < numCycles; i++){
     digitalWrite(targetPin,HIGH);
-    delayMicroseconds(delayValue);
+    delayMicroseconds(delayValue/2);
     digitalWrite(targetPin,LOW);
-    delayMicroseconds(delayValue);
+    delayMicroseconds(delayValue*1.5);
   }
 }
 
@@ -439,6 +440,7 @@ void hesAPirate()
     
     playNote(NOTE_Re5, 750);
     playNote(NOTE_Re4, 1000);
+    clear();
 }
 
 
@@ -466,23 +468,48 @@ void setup() {
 int dir;
 byte holdtime;
 bool is_unwind;
-
+int pause, real_pause;
 int pin = 1;
 byte pins[6] = {7, 4,5,6,7, 4};
 
+
+float unfinishedness()
+{
+  float ret = ((double)kroky + 1 - (double)stepCount*3) / (double)kroky;
+  if(ret < 0) ret = 0;
+  return ret;
+}
+
+
 void step() {
+  int real_pause = pause;
+  if(is_unwind)
+  {
+    real_pause = pause + holdtime;
+    int force = 5.0 + ((float)(45 - 7) * unfinishedness());
+    if (holdtime != force)
+    {
+      holdtime = force;
+      Serial.print("FORCE:");
+      Serial.println(force);
+    }
+  }
+  
   digitalWrite(pins[pin], 1);
   
   delay(holdtime);
-  Serial.print("steps:");
+  Serial.print("stepCount:");
   Serial.println(stepCount);
+  Serial.print("real_pause:");
+  Serial.println(real_pause);
 
-  if (!unwind)
+
+  if (!is_unwind)
     digitalWrite(pins[pin+1], 1);
     
   digitalWrite(pins[pin], 0);
   
-  if (!unwind)
+  if (!is_unwind)
   {
     delay(holdtime);
     digitalWrite(pins[pin+1], 0);
@@ -493,26 +520,16 @@ void step() {
   stepCount++;
 }
 
-int pause;
-
 void loop() {
 
 }
 
-void manual_unwind()
-{
-  is_unwind  = 1;
-  holdtime = 15;
-  pause = 5;
-  dir = -1;
-  go();
-}
-
 void unwind()
 {
-  is_unwind  = 1;
-  holdtime = 15;
+  is_unwind  = 10;
+  holdtime = 1;
   pause = 55;
+  kroky = 5000;
   dir = -1;
   go();
 }
@@ -521,19 +538,23 @@ void wind()
 {
   is_unwind  = 0;
   holdtime = 45;
-  pause = 300;
+  pause = 410;
+  kroky = 6000;
   dir = 1;
   go();
 }
 
 void go()
 {
-  for (int steps = 0; steps < 2450 * kladka; steps++)
+  for (int steps = 0; steps < kladka * kroky; steps++)
   {
     step();
-    delay(pause);
+    delay(real_pause);
     if (digitalRead(10) == 0)
       goto end;
+    if( Serial.available())
+      if (Serial.read() == ' ')
+        goto end;
   }
   end:
     delay(2000);
@@ -544,6 +565,7 @@ void clear()
 {
     for (int i = 0; i <= 5; i++)
       digitalWrite(pins[i], 0);
+    stepCount = 0;
 }
 
 void forceful()
