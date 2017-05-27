@@ -1,4 +1,14 @@
-int kladka = 1;
+
+#include <SoftPWM.h>
+
+SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS(4, 10);
+SOFTPWM_DEFINE_CHANNEL(0, DDRC, PORTC, PORTC0);  //Arduino pin A0
+SOFTPWM_DEFINE_CHANNEL(1, DDRC, PORTC, PORTC1);  //Arduino pin A1
+SOFTPWM_DEFINE_CHANNEL(2, DDRC, PORTC, PORTC2);  //Arduino pin A2
+SOFTPWM_DEFINE_CHANNEL(3, DDRC, PORTC, PORTC3);  //Arduino pin A3
+
+
+
 int kroky = 5000;
 /*************************************************
 http://forum.arduino.cc/index.php?topic=229750.msg1658325#msg1658325
@@ -97,6 +107,10 @@ http://forum.arduino.cc/index.php?topic=229750.msg1658325#msg1658325
 int bPin = 4;
 int oldTempo;
 
+bool stopbutton()
+{
+  return ((digitalRead(10) == 1) || (digitalRead(9) == 0));
+}
 
 void playNote(int noteInt, long length, long tempo = oldTempo,long breath = 0){
   oldTempo = tempo;
@@ -105,6 +119,8 @@ void playNote(int noteInt, long length, long tempo = oldTempo,long breath = 0){
   if(breath > 0) { //take a short pause or 'breath' if specified
     delay(breath);
   }
+  if(stopbutton())
+    while(true){loop();};
 }
 
 void buzz(int targetPin, long frequency, long length, long tempo) {
@@ -450,16 +466,18 @@ void hesAPirate()
 
 
 
+byte obejvak_pins[4] = {A0, A1, A2, A3};
+
 
 
 int stepCount = 0;         // number of steps the motor has taken
 
 void setup() {
   digitalWrite(10, 1);
+  digitalWrite(9, 1);
   Serial.begin(9600);
   for (int i = 4; i <= 7; i++)
     pinMode(i, 1);
-  //
   wind();
   unwind();
   hesAPirate();
@@ -475,25 +493,95 @@ byte pins[6] = {7, 4,5,6,7, 4};
 
 float unfinishedness()
 {
+  if(kroky==0)kroky=1;
   float ret = ((double)kroky + 1 - (double)stepCount*3) / (double)kroky;
   if(ret < 0) ret = 0;
   return ret;
 }
 
 
-void step() {
-  int real_pause = pause;
-  if(is_unwind)
-  {
-    real_pause = pause + holdtime;
-    int force = 5.0 + ((float)(45 - 7) * unfinishedness());
-    if (holdtime != force)
-    {
-      holdtime = force;
-      Serial.print("FORCE:");
-      Serial.println(force);
+void obejvak_go()
+{
+  for (byte pin = 0; pin < 4; pin++)
+    pinMode(obejvak_pins[pin], 1);
+
+  Palatis::SoftPWM.begin(110);
+
+  // print interrupt load for diagnostic purposes
+  Palatis::SoftPWM.printInterruptLoad();
+
+
+static volatile uint8_t v = 0;
+ {
+  for (uint8_t i = 0; i < Palatis::SoftPWM.size(); ++i) {
+    Serial.print(micros());
+    Serial.print(" loop(): ");
+    Serial.println(i);
+
+    unsigned long const WAIT = 1000000 / Palatis::SoftPWM.PWMlevels() / 2;
+    unsigned long nextMicros = 0;
+    for (unsigned int v = 0; v < Palatis::SoftPWM.PWMlevels() - 1; ++v) {
+      while (micros() < nextMicros);
+      nextMicros = micros() + WAIT;
+      Palatis::SoftPWM.set(i, v);
+    }
+    for (unsigned int v = Palatis::SoftPWM.PWMlevels() - 1; v >= 0; --v) {
+      while (micros() < nextMicros);
+      nextMicros = micros() + WAIT;
     }
   }
+}
+
+
+
+  int obejvak_step;
+  for (int steps = 0; steps < 4000; steps++)
+  {
+    Serial.println(steps);
+    obejvak_step++;
+    int tot = 500;
+    for (int j = 0; j < tot; j+=50)
+    {
+      int hold = j;
+      const int pins[4][4] = {{1,0,1,0},{0,1,1,0},{0,1,0,1},{1,0,0,1}};
+      for (int r = 0; r < hold; r++)
+      {
+        //for (int substep = 0; substep < 16; substep++) 
+        for (byte pin = 0; pin < 4; pin++)
+        {
+          digitalWrite(obejvak_pins[pin], pins[obejvak_step & 0b11][pin]);
+        }
+      }
+      for (int r = 0; r < (tot-hold); r++)
+      {
+        for (byte pin = 0; pin < 4; pin++)
+        {
+          digitalWrite(obejvak_pins[pin], pins[(obejvak_step - 1)& 0b11][pin]);
+        }
+      }   
+    }
+    //delay(1000);
+  }
+  for (byte pin = 0; pin < 4; pin++)
+  {
+    digitalWrite(obejvak_pins[pin], 0);
+    pinMode(obejvak_pins, 0);
+  }
+}
+
+void step() {
+  obejvak_go();
+  real_pause = pause;
+  int force = 45;
+  if(is_unwind)
+    force = 10 + ((float)(45 - 7) * unfinishedness());
+  if (holdtime != force)
+  {
+    holdtime = force;
+    Serial.print("FORCE:");
+    Serial.println(force);
+  }
+  real_pause = holdtime * 10;
   
   digitalWrite(pins[pin], 1);
   
@@ -502,7 +590,6 @@ void step() {
   Serial.println(stepCount);
   Serial.print("real_pause:");
   Serial.println(real_pause);
-
 
   if (!is_unwind)
     digitalWrite(pins[pin+1], 1);
@@ -526,10 +613,10 @@ void loop() {
 
 void unwind()
 {
-  is_unwind  = 10;
-  holdtime = 1;
-  pause = 55;
-  kroky = 5000;
+  is_unwind  = 1;
+  holdtime = 15;
+  pause = 175;
+  kroky = 3000;
   dir = -1;
   go();
 }
@@ -538,19 +625,19 @@ void wind()
 {
   is_unwind  = 0;
   holdtime = 45;
-  pause = 410;
-  kroky = 6000;
+  pause = 610;
+  kroky = 3500;
   dir = 1;
   go();
 }
 
 void go()
 {
-  for (int steps = 0; steps < kladka * kroky; steps++)
+  for (int steps = 0; steps < kroky; steps++)
   {
     step();
     delay(real_pause);
-    if (digitalRead(10) == 0)
+    if(stopbutton())
       goto end;
     if( Serial.available())
       if (Serial.read() == ' ')
@@ -566,25 +653,5 @@ void clear()
     for (int i = 0; i <= 5; i++)
       digitalWrite(pins[i], 0);
     stepCount = 0;
-}
-
-void forceful()
-{ 
-while (true){
-  digitalWrite(pins[pin], 1);
-  
-  delay(holdtime);
-  Serial.print("steps:");
-  Serial.println(stepCount);
-
-  digitalWrite(pins[pin-1], 0);
-  delay(holdtime);
-  
-  pin += dir;
-  if (pin > 4) pin = 1;
-  if (pin < 1) pin = 4;
-  stepCount++;
-}
-clear();
 }
 
