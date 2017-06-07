@@ -1,11 +1,4 @@
 
-#include <SoftPWM.h>
-
-SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS(4, 10);
-SOFTPWM_DEFINE_CHANNEL(0, DDRC, PORTC, PORTC0);  //Arduino pin A0
-SOFTPWM_DEFINE_CHANNEL(1, DDRC, PORTC, PORTC1);  //Arduino pin A1
-SOFTPWM_DEFINE_CHANNEL(2, DDRC, PORTC, PORTC2);  //Arduino pin A2
-SOFTPWM_DEFINE_CHANNEL(3, DDRC, PORTC, PORTC3);  //Arduino pin A3
 
 
 
@@ -109,18 +102,18 @@ int oldTempo;
 
 bool stopbutton()
 {
-  return ((digitalRead(10) == 1) || (digitalRead(9) == 0));
+  return ( Serial.available()&&(Serial.read() == ' ')) || (digitalRead(10) == 1) || (digitalRead(9) == 0);
 }
 
-void playNote(int noteInt, long length, long tempo = oldTempo,long breath = 0){
+bool playNote(int noteInt, long length, long tempo = oldTempo,long breath = 0){
   oldTempo = tempo;
   length = length - breath;
   buzz(bPin, noteInt, length, tempo);
   if(breath > 0) { //take a short pause or 'breath' if specified
     delay(breath);
   }
-  if(stopbutton())
-    while(true){loop();};
+  return(stopbutton());
+    
 }
 
 void buzz(int targetPin, long frequency, long length, long tempo) {
@@ -143,35 +136,35 @@ void hesAPirate()
      250 - Quarter
      500 - Half
      1000 - Whole */
-    playNote(NOTE_Re4, 250, tempo);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 250);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 250);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 125);
+    playNote(NOTE_Re4, 250);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 250);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 250);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
     
-    playNote(NOTE_Re4, 250);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 250);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 250);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 125);
+    playNote(NOTE_Re4, 250);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 250);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 250);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
     
-    playNote(NOTE_Re4, 250);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 250);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 250);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_Re4, 125);
-    playNote(NOTE_La3, 125);
-    playNote(NOTE_Do4, 125);
+    playNote(NOTE_Re4, 250);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 250);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 250);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_Re4, 125);if(stopbutton())return;
+    playNote(NOTE_La3, 125);if(stopbutton())return;
+    playNote(NOTE_Do4, 125);if(stopbutton())return;
     
     playNote(NOTE_Re4, 250);
     playNote(NOTE_Re4, 250);
@@ -181,7 +174,7 @@ void hesAPirate()
     playNote(NOTE_Fa4, 250);
     playNote(NOTE_Fa4, 125);
     playNote(NOTE_Sol4, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Mi4, 250);
     playNote(NOTE_Mi4, 250);
     playNote(NOTE_Re4, 125);
@@ -190,7 +183,7 @@ void hesAPirate()
     playNote(NOTE_Re4, 375);
     playNote(NOTE_La3, 125);
     playNote(NOTE_Do4, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Re4, 250);
     playNote(NOTE_Re4, 250);
     playNote(NOTE_Re4, 125);
@@ -199,7 +192,7 @@ void hesAPirate()
     playNote(NOTE_Fa4, 250);
     playNote(NOTE_Fa4, 125);
     playNote(NOTE_Sol4, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Mi4, 250);
     playNote(NOTE_Mi4, 250);
     playNote(NOTE_Re4, 125);
@@ -207,7 +200,7 @@ void hesAPirate()
     playNote(NOTE_Re4, 500);
     playNote(NOTE_La3, 125);
     playNote(NOTE_Do4, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Re4, 250);
     playNote(NOTE_Re4, 250);
     playNote(NOTE_Re4, 125);
@@ -216,7 +209,7 @@ void hesAPirate()
     playNote(NOTE_Sol4, 250);
     playNote(NOTE_Sol4, 125);
     playNote(NOTE_La4, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_LaS4, 250);
     playNote(NOTE_LaS4, 250);
     playNote(NOTE_La4, 125);
@@ -225,7 +218,7 @@ void hesAPirate()
     playNote(NOTE_Re4, 375);
     playNote(NOTE_Re4, 125);
     playNote(NOTE_Mi4, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Fa4, 250);
     playNote(NOTE_Fa4, 250);
     playNote(NOTE_Sol4, 250);
@@ -233,7 +226,7 @@ void hesAPirate()
     playNote(NOTE_Re4, 375);
     playNote(NOTE_Re4, 125);
     playNote(NOTE_Fa4, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Mi4, 250);
     playNote(NOTE_Mi4, 250);
     playNote(NOTE_Fa4, 125);
@@ -241,7 +234,7 @@ void hesAPirate()
     playNote(NOTE_Mi4, 500);
     playNote(NOTE_La4, 125);
     playNote(NOTE_Do5, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Re5, 250);
     playNote(NOTE_Re5, 250);
     playNote(NOTE_Re5, 125);
@@ -250,7 +243,7 @@ void hesAPirate()
     playNote(NOTE_Fa5, 250);
     playNote(NOTE_Fa5, 125);
     playNote(NOTE_Sol5, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Mi5, 250);
     playNote(NOTE_Mi5, 250);
     playNote(NOTE_Re5, 125);
@@ -259,7 +252,7 @@ void hesAPirate()
     playNote(NOTE_Re5, 375);
     playNote(NOTE_La4, 125);
     playNote(NOTE_Do5, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Re5, 250);
     playNote(NOTE_Re5, 250);
     playNote(NOTE_Re5, 125);
@@ -268,7 +261,7 @@ void hesAPirate()
     playNote(NOTE_Fa5, 250);
     playNote(NOTE_Fa5, 125);
     playNote(NOTE_Sol5, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Mi5, 250);
     playNote(NOTE_Mi5, 250);
     playNote(NOTE_Re5, 125);
@@ -276,7 +269,7 @@ void hesAPirate()
     playNote(NOTE_Re5, 500);
     playNote(NOTE_La4, 125);
     playNote(NOTE_Do5, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Re5, 250);
     playNote(NOTE_Re5, 250);
     playNote(NOTE_Re5, 125);
@@ -285,7 +278,7 @@ void hesAPirate()
     playNote(NOTE_Sol5, 250);
     playNote(NOTE_Sol5, 125);
     playNote(NOTE_La5, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_LaS5, 250);
     playNote(NOTE_LaS5, 250);
     playNote(NOTE_La5, 125);
@@ -294,7 +287,7 @@ void hesAPirate()
     playNote(NOTE_Re5, 375);
     playNote(NOTE_Re5, 125);
     playNote(NOTE_Mi5, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Fa5, 250);
     playNote(NOTE_Fa5, 250);
     playNote(NOTE_Sol5, 250);
@@ -302,7 +295,7 @@ void hesAPirate()
     playNote(NOTE_Re5, 375);
     playNote(NOTE_Re5, 125);
     playNote(NOTE_Fa5, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Mi5, 250);
     playNote(NOTE_Mi5, 250);
     playNote(NOTE_Re5, 125);
@@ -310,7 +303,7 @@ void hesAPirate()
     playNote(NOTE_Re5, 250);
     playNote(NOTE_Re5, 250);
     playNote(NOTE_Mi5, 250);
-    
+    if(stopbutton())return;
     playNote(NOTE_Fa5, 250);
     playNote(NOTE_Fa5, 125);
     playNote(NOTE_Fa5, 125);
@@ -318,12 +311,12 @@ void hesAPirate()
     playNote(NOTE_La5, 500);
     playNote(NOTE_Fa5, 125);
     playNote(NOTE_Re5, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_La4, 750);
     playNote(NOTE_LaS5, 500);
     playNote(NOTE_Sol5, 125);
     playNote(NOTE_Re5, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_LaS4, 750);
     playNote(NOTE_Mi4, 125);
     playNote(NOTE_Mi4, 250);
@@ -331,131 +324,131 @@ void hesAPirate()
     playNote(NOTE_Sol4, 500);
     playNote(NOTE_Fa4, 125);
     playNote(NOTE_Sol4, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_La4, 250);
     playNote(NOTE_La4, 250);
     playNote(NOTE_La4, 250);
     playNote(NOTE_LaS4, 125);
     playNote(NOTE_La4, 625);
-    
+    if(stopbutton())return;
     playNote(NOTE_Sol4, 250);
     playNote(NOTE_Sol4, 250);
     playNote(NOTE_Sol4, 250);
     playNote(NOTE_Sol4, 125);
     playNote(NOTE_La4, 625);
-    
+    if(stopbutton())return;
     playNote(NOTE_La4, 250);
     playNote(NOTE_La4, 250);
     playNote(NOTE_La4, 250);
     playNote(NOTE_LaS4, 125);
     playNote(NOTE_La4, 625);
-    
+    if(stopbutton())return;
     playNote(NOTE_Sol4, 250);
     playNote(NOTE_Fa4, 250);
     playNote(NOTE_Mi4, 250);
     playNote(NOTE_Re4, 500);
     playNote(NOTE_Re4, 125);
     playNote(NOTE_Mi4, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Fa4, 500);
     playNote(NOTE_Sol4, 125);
     playNote(NOTE_La4, 125);
     playNote(NOTE_Sol4, 250);
     playNote(NOTE_Fa4, 250);
     playNote(NOTE_Mi4, 250);
-    
+    if(stopbutton())return;
     playNote(NOTE_Fa4, 250);
     playNote(NOTE_Sol4, 250);
     playNote(NOTE_La4, 250);
     playNote(NOTE_Sol4, 500);
     playNote(NOTE_Fa4, 125);
     playNote(NOTE_Sol4, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_La4, 500);
     playNote(NOTE_Sol4, 125);
     playNote(NOTE_Fa4, 125);
     playNote(NOTE_Mi4, 250);
     playNote(NOTE_Fa4, 250);
     playNote(NOTE_Mi4, 250);
-    
+    if(stopbutton())return;
     playNote(NOTE_Re4, 500);
     playNote(NOTE_Mi4, 125);
     playNote(NOTE_Do4, 125);
     playNote(NOTE_Re4, 500);
     playNote(NOTE_Re5, 125);
     playNote(NOTE_Mi5, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Fa5, 500);
     playNote(NOTE_Mi5, 125);
     playNote(NOTE_Fa5, 125);
     playNote(NOTE_Sol5, 250);
     playNote(NOTE_Fa5, 250);
     playNote(NOTE_Sol5, 250);
-    
+    if(stopbutton())return;
     playNote(NOTE_La5, 250);
     playNote(NOTE_Sol5, 250);
     playNote(NOTE_Fa5, 250);
     playNote(NOTE_Re5, 500);
     playNote(NOTE_Re5, 125);
     playNote(NOTE_Mi5, 125);
-    
+    if(stopbutton())return;
     playNote(NOTE_Fa5, 250);
     playNote(NOTE_Sol5, 250);
     playNote(NOTE_La5, 250);
     playNote(NOTE_LaS5, 250);
     playNote(NOTE_Re5, 250);
     playNote(NOTE_Sol5, 250);
-    
+    if(stopbutton())return;
     playNote(NOTE_Fa5, 500);
     playNote(NOTE_Sol5, 125);
     playNote(NOTE_Mi5, 125);
     playNote(NOTE_Re5, 500);
     
-    playNote(NOTE_Mi5, 125);
-    playNote(NOTE_Do5, 125);
-    playNote(NOTE_La5, 750);
-    playNote(NOTE_LaS5, 750);
-    playNote(NOTE_La5, 250);
-    playNote(NOTE_La5, 250);
-    playNote(NOTE_La5, 250);
+    playNote(NOTE_Mi5, 125);if(stopbutton())return;
+    playNote(NOTE_Do5, 125);if(stopbutton())return;
+    playNote(NOTE_La5, 750);if(stopbutton())return;
+    playNote(NOTE_LaS5, 750);if(stopbutton())return;
+    playNote(NOTE_La5, 250);if(stopbutton())return;
+    playNote(NOTE_La5, 250);if(stopbutton())return;
+    playNote(NOTE_La5, 250);if(stopbutton())return;
     
-    playNote(NOTE_La5, 125);
-    playNote(NOTE_Sol5, 625);
-    playNote(NOTE_Sol5, 750);
+    playNote(NOTE_La5, 125);if(stopbutton())return;
+    playNote(NOTE_Sol5, 625);if(stopbutton())return;
+    playNote(NOTE_Sol5, 750);if(stopbutton())return;
     
-    playNote(NOTE_Fa5, 750);
-    playNote(NOTE_Mi5, 250);
-    playNote(NOTE_Fa5, 250);
-    playNote(NOTE_Mi5, 250);
+    playNote(NOTE_Fa5, 750);if(stopbutton())return;
+    playNote(NOTE_Mi5, 250);if(stopbutton())return;
+    playNote(NOTE_Fa5, 250);if(stopbutton())return;
+    playNote(NOTE_Mi5, 250);if(stopbutton())return;
     
-    playNote(NOTE_Re5, 375);
-    playNote(NOTE_Re5, 125);
-    playNote(NOTE_Mi5, 125);
-    playNote(NOTE_Fa5, 125);
-    playNote(NOTE_La5, 375);
-    playNote(NOTE_Re5, 125);
-    playNote(NOTE_Mi5, 125);
-    playNote(NOTE_Fa5, 125);
+    playNote(NOTE_Re5, 375);if(stopbutton())return;
+    playNote(NOTE_Re5, 125);if(stopbutton())return;
+    playNote(NOTE_Mi5, 125);if(stopbutton())return;
+    playNote(NOTE_Fa5, 125);if(stopbutton())return;
+    playNote(NOTE_La5, 375);if(stopbutton())return;
+    playNote(NOTE_Re5, 125);if(stopbutton())return;
+    playNote(NOTE_Mi5, 125);if(stopbutton())return;
+    playNote(NOTE_Fa5, 125);if(stopbutton())return;
     
-    playNote(NOTE_LaS5, 375);
-    playNote(NOTE_Re5, 125);
-    playNote(NOTE_Mi5, 125);
-    playNote(NOTE_Fa5, 125);
-    playNote(NOTE_La5, 250);
-    playNote(NOTE_La5, 250);
-    playNote(NOTE_Do6, 250);
+    playNote(NOTE_LaS5, 375);if(stopbutton())return;
+    playNote(NOTE_Re5, 125);if(stopbutton())return;
+    playNote(NOTE_Mi5, 125);if(stopbutton())return;
+    playNote(NOTE_Fa5, 125);if(stopbutton())return;
+    playNote(NOTE_La5, 250);if(stopbutton())return;
+    playNote(NOTE_La5, 250);if(stopbutton())return;
+    playNote(NOTE_Do6, 250);if(stopbutton())return;
     
-    playNote(NOTE_La5, 125);
-    playNote(NOTE_Sol5, 625);
-    playNote(NOTE_Sol5, 750);
+    playNote(NOTE_La5, 125);if(stopbutton())return;
+    playNote(NOTE_Sol5, 625);if(stopbutton())return;
+    playNote(NOTE_Sol5, 750);if(stopbutton())return;
  
-    playNote(NOTE_Fa5, 750);
-    playNote(NOTE_Mi5, 250);
-    playNote(NOTE_Fa5, 250);
-    playNote(NOTE_Mi5, 250);
+    playNote(NOTE_Fa5, 750);if(stopbutton())return;
+    playNote(NOTE_Mi5, 250);if(stopbutton())return;
+    playNote(NOTE_Fa5, 250);if(stopbutton())return;
+    playNote(NOTE_Mi5, 250);if(stopbutton())return;
     
-    playNote(NOTE_Re5, 750);
-    playNote(NOTE_Re4, 1000);
+    playNote(NOTE_Re5, 750);if(stopbutton())return;
+    playNote(NOTE_Re4, 1000);if(stopbutton())return;
     clear();
 }
 
@@ -473,15 +466,40 @@ byte obejvak_pins[4] = {A0, A1, A2, A3};
 int stepCount = 0;         // number of steps the motor has taken
 
 void setup() {
+  Serial.begin(115200);
   digitalWrite(10, 1);
   digitalWrite(9, 1);
-  Serial.begin(9600);
+
   for (int i = 4; i <= 7; i++)
     pinMode(i, 1);
   wind();
   unwind();
   hesAPirate();
+    for (int i = 4; i <= 7; i++)
+    pinMode(i, 0);
+
+  obejvak_go();//
+
 }
+void pauza()
+{
+    /*
+  Serial.println("wt");
+  long nextMicros= micros() + 1000*60*14;
+  Serial.println("f");
+  while (micros() < nextMicros)
+  {
+    Serial.println("...");
+    if(stopbutton()){
+      Serial.println("ok");
+      delay(1000);
+      break;
+    }
+    Serial.print(nextMicros - micros());
+    Serial.println("us pause");
+  }*/
+}
+
 
 int dir;
 byte holdtime;
@@ -500,77 +518,99 @@ float unfinishedness()
 }
 
 
+#include <SoftPWM.h>
+const int pwmlevels = 11;
+
+SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS(4, (pwmlevels));
+SOFTPWM_DEFINE_CHANNEL(0, DDRC, PORTC, PORTC0);  //Arduino pin A0
+SOFTPWM_DEFINE_CHANNEL(1, DDRC, PORTC, PORTC1);  //Arduino pin A1
+SOFTPWM_DEFINE_CHANNEL(2, DDRC, PORTC, PORTC2);  //Arduino pin A2
+SOFTPWM_DEFINE_CHANNEL(3, DDRC, PORTC, PORTC3);  //Arduino pin A3
+
+
 void obejvak_go()
 {
   for (byte pin = 0; pin < 4; pin++)
     pinMode(obejvak_pins[pin], 1);
-
-  Palatis::SoftPWM.begin(110);
+  Serial.println("palantis");
+  Palatis::SoftPWM.begin(215000/pwmlevels);
 
   // print interrupt load for diagnostic purposes
   Palatis::SoftPWM.printInterruptLoad();
 
-
-static volatile uint8_t v = 0;
- {
-  for (uint8_t i = 0; i < Palatis::SoftPWM.size(); ++i) {
-    Serial.print(micros());
-    Serial.print(" loop(): ");
-    Serial.println(i);
-
-    unsigned long const WAIT = 1000000 / Palatis::SoftPWM.PWMlevels() / 2;
-    unsigned long nextMicros = 0;
-    for (unsigned int v = 0; v < Palatis::SoftPWM.PWMlevels() - 1; ++v) {
-      while (micros() < nextMicros);
-      nextMicros = micros() + WAIT;
-      Palatis::SoftPWM.set(i, v);
-    }
-    for (unsigned int v = Palatis::SoftPWM.PWMlevels() - 1; v >= 0; --v) {
-      while (micros() < nextMicros);
-      nextMicros = micros() + WAIT;
-    }
-  }
-}
-
-
-
-  int obejvak_step;
-  for (int steps = 0; steps < 4000; steps++)
+  //const byte pins[4][4] = {{1,0,1,0},{0,1,1,0},{0,1,0,1},{1,0,0,1}};
+  const byte pins[16][4] = {
+    {0,0,0,0},
+    {0,0,0,0},
+    {0,0,0,0},
+    {0,1,1,0},
+//    {0,0,1,0},//
+    {0,0,0,0},
+    {0,0,0,0},
+    {0,0,0,0},
+    {0,1,0,1},
+//    {0,1,0,0},//
+    {0,0,0,0},
+    {0,0,0,0},
+    {0,0,0,0},
+    {1,0,0,1},
+//    {0,0,0,1},//
+    {0,0,0,0},
+    {0,0,0,0},
+    {0,0,0,0},
+    {1,0,1,0}
+//    {1,0,0,0}//
+    };
+  
+//  const byte pins[4][4] = {{1,0,0,0},{0,0,1,0},{0,1,0,0},{0,0,0,1}};
+  
+  for (int step = 0; step < 30000; step++)
   {
-    Serial.println(steps);
-    obejvak_step++;
-    int tot = 500;
-    for (int j = 0; j < tot; j+=50)
+    Serial.print("step ");
+    Serial.println(step);
+
+    unsigned long const WAIT = 50000 / pwmlevels;
+    unsigned long nextMicros = 0;
+    int max_level = pwmlevels - 1;
+    for (unsigned int v = 0; v <= max_level; ++v)
     {
-      int hold = j;
-      const int pins[4][4] = {{1,0,1,0},{0,1,1,0},{0,1,0,1},{1,0,0,1}};
-      for (int r = 0; r < hold; r++)
+      if(stopbutton())return;
+      //Serial.println(micros());
+      while (micros() < nextMicros);
+      nextMicros = micros() + WAIT;
+      
+      for (byte pin = 0; pin < 4; pin++)
       {
-        //for (int substep = 0; substep < 16; substep++) 
-        for (byte pin = 0; pin < 4; pin++)
-        {
-          digitalWrite(obejvak_pins[pin], pins[obejvak_step & 0b11][pin]);
-        }
+        const byte cur = pins[step &     0b1111][pin];
+        const byte next= pins[(1+step) & 0b1111][pin];
+
+        int l;
+        if (cur && next)
+          l = max_level;
+        if (cur && !next)
+          l = max_level - v;
+        if (!cur && !next)
+          l = 0;
+        if (!cur && next)
+          l = v;
+         
+        Palatis::SoftPWM.set(pin, l);
+        //digitalWrite(obejvak_pins[pin], l);
       }
-      for (int r = 0; r < (tot-hold); r++)
-      {
-        for (byte pin = 0; pin < 4; pin++)
-        {
-          digitalWrite(obejvak_pins[pin], pins[(obejvak_step - 1)& 0b11][pin]);
-        }
-      }   
     }
-    //delay(1000);
   }
   for (byte pin = 0; pin < 4; pin++)
   {
-    digitalWrite(obejvak_pins[pin], 0);
-    pinMode(obejvak_pins, 0);
+//    int p = obejvak_pins[pin];
+      //Palatis::SoftPWM.set(pin, 0);
+    Palatis::SoftPWM.allOff();
+//    digitalWrite(p, 0);
+//    pinMode(p, 0);
   }
 }
 
 void step() {
-  obejvak_go();
+  
   real_pause = pause;
   int force = 45;
   if(is_unwind)
@@ -616,7 +656,7 @@ void unwind()
   is_unwind  = 1;
   holdtime = 15;
   pause = 175;
-  kroky = 3000;
+  kroky = 4600;
   dir = -1;
   go();
 }
@@ -626,7 +666,7 @@ void wind()
   is_unwind  = 0;
   holdtime = 45;
   pause = 610;
-  kroky = 3500;
+  kroky = 5000;
   dir = 1;
   go();
 }
@@ -639,9 +679,6 @@ void go()
     delay(real_pause);
     if(stopbutton())
       goto end;
-    if( Serial.available())
-      if (Serial.read() == ' ')
-        goto end;
   }
   end:
     delay(2000);
