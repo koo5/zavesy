@@ -470,6 +470,13 @@ void setup() {
   digitalWrite(10, 1);
   digitalWrite(9, 1);
 
+  for (byte pin = 0; pin < 4; pin++)
+  {
+    int p = obejvak_pins[pin];
+    pinMode(p, 1);
+    digitalWrite(p, 1);
+  }
+
   for (int i = 4; i <= 7; i++)
     pinMode(i, 1);
   wind();
@@ -519,7 +526,7 @@ float unfinishedness()
 
 
 #include <SoftPWM.h>
-const int pwmlevels = 11;
+const int pwmlevels = 8;//11;
 
 SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS(4, (pwmlevels));
 SOFTPWM_DEFINE_CHANNEL(0, DDRC, PORTC, PORTC0);  //Arduino pin A0
@@ -530,8 +537,6 @@ SOFTPWM_DEFINE_CHANNEL(3, DDRC, PORTC, PORTC3);  //Arduino pin A3
 
 void obejvak_go()
 {
-  for (byte pin = 0; pin < 4; pin++)
-    pinMode(obejvak_pins[pin], 1);
   Serial.println("palantis");
   Palatis::SoftPWM.begin(215000/pwmlevels);
 
@@ -564,7 +569,7 @@ void obejvak_go()
   
 //  const byte pins[4][4] = {{1,0,0,0},{0,0,1,0},{0,1,0,0},{0,0,0,1}};
   
-  for (int step = 0; step < 30000; step++)
+  for (int step = 0; step < 100000; step++)
   {
     Serial.print("step ");
     Serial.println(step);
@@ -574,7 +579,7 @@ void obejvak_go()
     int max_level = pwmlevels - 1;
     for (unsigned int v = 0; v <= max_level; ++v)
     {
-      if(stopbutton())return;
+      if(stopbutton())goto end;
       //Serial.println(micros());
       while (micros() < nextMicros);
       nextMicros = micros() + WAIT;
@@ -599,11 +604,12 @@ void obejvak_go()
       }
     }
   }
+  end:
   for (byte pin = 0; pin < 4; pin++)
   {
 //    int p = obejvak_pins[pin];
       //Palatis::SoftPWM.set(pin, 0);
-    Palatis::SoftPWM.allOff();
+    Palatis::SoftPWM.set(pin, 1);
 //    digitalWrite(p, 0);
 //    pinMode(p, 0);
   }
